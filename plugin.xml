@@ -2,13 +2,13 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="com.exacttarget.etpushsdk"
+    id="nz.co.iswe.appgyver.pluygin.etsdk"
     version="0.1.0">
-    <name>ETPush</name>
-    <description>ET SDK Cordova Plugin</description>
+    <name>ETSDKPlugin</name>
+    <description>ET SDK - AppGyver Plugin - http://appgyver.com</description>
     <license>Apache 2.0</license>
-    <author>Salesforce Marketing Cloud</author>
-    <keywords>cordova,Salesforce Marketing Cloud, push, marketing cloud, exacttarget</keywords>
+    <author>Rafael Almeida (https://github.com/pentateu/)</author>
+    <keywords>appgyver,supersonic,cordova,phonegap,push,notificaitons,Salesforce Marketing Cloud, push, marketing cloud, exacttarget</keywords>
 
     <js-module src="www/push.js" name="ETPush">
         <clobbers target="ETPush" />
@@ -27,9 +27,9 @@
     <platform name="android">
         <info>
             You need to install __Google Play Services__ from the `Android Extras` section using the Android SDK manager (run `android`).
-            
+
             You need to add the following line to your `local.properties`
-            
+
             android.library.reference.1=PATH_TO_ANDROID_SDK/sdk/extras/google/google_play_services/libproject/google-play-services_lib
         </info>
 
@@ -38,7 +38,7 @@
                 <param name="android-package" value="com.exacttarget.etpushsdk.ETSdkWrapper"/>
             </feature>
         </config-file>
-        
+
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <!-- ExactTarget required permissions -->
             <permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE"
@@ -53,14 +53,14 @@
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
             <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
             <!-- END ExactTarget Required Permissions -->
-            
+
             <!-- ExactTarget Permissions for location and region monitoring -->
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
             <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
             <!-- END ExactTarget location and region monitoring Permissions -->
         </config-file>
-        
+
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <!-- activity that handles message reception and forwarding -->
             <activity android:name="com.exacttarget.etpushsdk.ETPushNotificationRecipient" />
@@ -97,7 +97,7 @@
                     <action android:name="android.intent.action.ACTION_BATTERY_OKAY"/>
                 </intent-filter>
             </receiver>
-                                    
+
               <!-- Wake up the app up every so often to get user's location -->
             <receiver android:name="com.exacttarget.etpushsdk.ETLocationTimeoutReceiver"/>
             <receiver android:name="com.exacttarget.etpushsdk.ETLocationWakeupReceiver"/>
@@ -130,7 +130,7 @@
                 <action android:name="$PACKAGE_NAME.DID_MONITORING"/>
             </intent-filter>
             </service>
-            
+
                         <!-- ET Google Cloud Messaging Version (required to match GCM jar file) -->
             <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
             <meta-data android:name="ETApplicationID_dev" android:value="@string/et_app_id_dev" />
@@ -188,11 +188,15 @@
         </config-file>
         <config-file target="config.xml" parent="/*">
             <feature name="ETPush">
-                <param name="ios-package" value="ETSdkWrapper"/>
+              <param name="ios-package" value="ETSdkWrapper"/>
             </feature>
         </config-file>
         <header-file src="src/ios/ETSdkWrapper.h" />
         <source-file src="src/ios/ETSdkWrapper.m" />
+
+        <header-file src="src/ios/AppDelegate+ETPlugin.h" />
+        <source-file src="src/ios/AppDelegate+ETPlugin.m" />
+
         <source-file src="src/ios/etpushsdk/libetpushsdk-3.3.0.a" framework="true" />
         <header-file src="src/ios/etpushsdk/ETBulkUpdateShim.h" />
         <header-file src="src/ios/etpushsdk/ETEvent.h" />
