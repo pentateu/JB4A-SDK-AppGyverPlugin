@@ -50,6 +50,7 @@
     BOOL useAnalytics = [[ETSettings objectForKey:@"UseAnalytics"] boolValue];
     
 #ifdef DEBUG
+    
     NSString* devAppID = [ETSettings objectForKey:@"ApplicationID-Dev"];
     NSString* devAccessToken = [ETSettings objectForKey:@"AccessToken-Dev"];
     //use your debug app id and token you setup in code.exacttarget.com here
@@ -58,6 +59,8 @@
                                   withAnalytics:useAnalytics
                             andLocationServices:useGeoLocation
                                   andCloudPages:NO];
+    
+    NSLog(@"[ETPlugin] - DEBUG Mode - using settings -> ApplicationID-Dev: %@ and AccessToken-Dev: %@", devAppID, devAccessToken);
     
 #else
     NSString* prodAppID = [ETSettings objectForKey:@"ApplicationID-Prod"];
@@ -70,6 +73,7 @@
                             andLocationServices:useGeoLocation
                                   andCloudPages:NO];
     
+    NSLog(@"[ETPlugin] - DEBUG Mode - using settings -> ApplicationID-Prod: %@ and AccessToken-Prod: %@", prodAppID, prodAccessToken);
 #endif
     
     
@@ -103,13 +107,10 @@
 #endif
     [[ETPush pushManager] shouldDisplayAlertViewIfPushReceived:YES];
     [[ETPush pushManager] applicationLaunchedWithOptions:launchOptions];
-    NSString* token = [[ETPush pushManager] deviceToken];
-    NSString* deviceID = [ETPush safeDeviceIdentifier]; NSLog(@"token %@", token);
-    NSLog(@"Device ID %@", deviceID);
+    
     if (useGeoLocation) {
         [[ETLocationManager locationManager] startWatchingLocation];
     }
-    
 }
 
 
@@ -121,7 +122,7 @@
                                                          error:&error];
     if (!jsonData) {
         
-        NSLog(@"json error: %@", error);
+        NSLog(@"[ETPlugin] - Error Parsing JSON from remove notification -> json error: %@", error);
         
     } else {
         
@@ -129,14 +130,19 @@
     }
 }
 
+-(NSString *) cleanupToken:(NSData *)token {
+    return [[[[token description]
+              stringByReplacingOccurrencesOfString: @"<" withString: @""]
+             stringByReplacingOccurrencesOfString: @">" withString: @""]
+            stringByReplacingOccurrencesOfString: @" " withString: @""];
+}
+
 - (void) application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     [[ETPush pushManager] registerDeviceToken:deviceToken];
+    
     // re-post ( broadcast )
-    NSString* token = [[[[deviceToken description]
-                         stringByReplacingOccurrencesOfString: @"<" withString: @""]
-                        stringByReplacingOccurrencesOfString: @">" withString: @""]
-                       stringByReplacingOccurrencesOfString: @" " withString: @""];
+    NSString* token = [ self cleanupToken:deviceToken];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:CDVRemoteNotification object:token];
 }
@@ -156,7 +162,7 @@
                                                          error:&error];
     if (!jsonData) {
         
-        NSLog(@"jsn error: %@", error);
+        NSLog(@"[ETPlugin] - Error Parsing JSON from local notification ->: %@", error);
         
     } else {
         
